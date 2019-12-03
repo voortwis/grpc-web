@@ -42,6 +42,7 @@ func (w *webSocketResponseWriter) enablePing(timeOutInterval time.Duration) {
 	w.timer = timer.NewTimer(w.timeOutInterval)
 	dispose := make(chan bool)
 	w.wsConn.SetCloseHandler(func(code int, text string) error {
+		fmt.Println("closeHandler called (ping part)")
 		close(dispose)
 		return nil
 	})
@@ -58,6 +59,7 @@ func (w *webSocketResponseWriter) ping(dispose chan bool) {
 		case <-dispose:
 			return
 		case <-w.timer.C:
+			fmt.Println("sending pingmessage")
 			w.timer.Reset(w.timeOutInterval)
 			w.wsConn.WriteMessage(websocket.PingMessage, []byte{})
 		}
