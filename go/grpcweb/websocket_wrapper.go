@@ -11,6 +11,7 @@ import (
 	"net/textproto"
 	"strings"
 	"time"
+	"fmt"
 
 	"github.com/desertbit/timer"
 	"github.com/gorilla/websocket"
@@ -139,7 +140,7 @@ func (w *webSocketWrappedReader) Close() error {
 // 0 = Data
 // 1 = End of client send
 func (w *webSocketWrappedReader) Read(p []byte) (int, error) {
-	Println("called Read")
+	fmt.Println("called Read")
 	// If a buffer remains from a previous WebSocket frame read then continue reading it
 	if w.remainingBuffer != nil {
 
@@ -169,7 +170,7 @@ func (w *webSocketWrappedReader) Read(p []byte) (int, error) {
 
 	// Read a whole frame from the WebSocket connection
 	messageType, framePayload, err := w.wsConn.ReadMessage()
-	Println("readMessage result: ", messageType, framePayload, err);
+	fmt.Println("readMessage result: ", messageType, framePayload, err);
 	if err != nil || messageType == -1 {
 		// The client has closed the connection. Indicate to the response writer that it should close
 		w.cancel()
