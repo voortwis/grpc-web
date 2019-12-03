@@ -37,6 +37,7 @@ func newWebSocketResponseWriter(wsConn *websocket.Conn) *webSocketResponseWriter
 }
 
 func (w *webSocketResponseWriter) enablePing(timeOutInterval time.Duration) {
+	fmt.Println("Enabled ping for socket ",timeOutInterval)
 	w.timeOutInterval = timeOutInterval
 	w.timer = timer.NewTimer(w.timeOutInterval)
 	dispose := make(chan bool)
