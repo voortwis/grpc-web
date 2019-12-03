@@ -47,6 +47,7 @@ var (
 )
 
 func main() {
+	fmt.Println("Started personalized version")
 	pflag.Parse()
 	for _, flag := range pflag.Args() {
 		if flag == "true" || flag == "false" {
