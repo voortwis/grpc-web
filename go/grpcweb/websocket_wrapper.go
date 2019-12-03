@@ -168,7 +168,7 @@ func (w *webSocketWrappedReader) Read(p []byte) (int, error) {
 
 	// Read a whole frame from the WebSocket connection
 	messageType, framePayload, err := w.wsConn.ReadMessage()
-	if err == io.EOF || messageType == -1 {
+	if err != nil || messageType == -1 {
 		// The client has closed the connection. Indicate to the response writer that it should close
 		w.cancel()
 		return 0, io.EOF
