@@ -47,7 +47,7 @@ var (
 )
 
 func main() {
-	fmt.Println("Started personalized version")
+	fmt.Println("Started personalized version - with Virtual-Felix change")
 	pflag.Parse()
 	for _, flag := range pflag.Args() {
 		if flag == "true" || flag == "false" {
