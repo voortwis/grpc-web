@@ -11,7 +11,6 @@ import (
 	"net/textproto"
 	"strings"
 	"time"
-	"fmt"
 
 	"github.com/desertbit/timer"
 	"github.com/gorilla/websocket"
@@ -37,12 +36,10 @@ func newWebSocketResponseWriter(wsConn *websocket.Conn) *webSocketResponseWriter
 }
 
 func (w *webSocketResponseWriter) enablePing(timeOutInterval time.Duration) {
-	fmt.Println("Enabled ping for socket ",timeOutInterval)
 	w.timeOutInterval = timeOutInterval
 	w.timer = timer.NewTimer(w.timeOutInterval)
 	dispose := make(chan bool)
 	w.wsConn.SetCloseHandler(func(code int, text string) error {
-		fmt.Println("closeHandler called (ping part)")
 		close(dispose)
 		return nil
 	})
@@ -59,7 +56,6 @@ func (w *webSocketResponseWriter) ping(dispose chan bool) {
 		case <-dispose:
 			return
 		case <-w.timer.C:
-			fmt.Println("sending pingmessage")
 			w.timer.Reset(w.timeOutInterval)
 			w.wsConn.WriteMessage(websocket.PingMessage, []byte{})
 		}
@@ -143,7 +139,6 @@ func (w *webSocketWrappedReader) Close() error {
 // 0 = Data
 // 1 = End of client send
 func (w *webSocketWrappedReader) Read(p []byte) (int, error) {
-	fmt.Println("called Read")
 	// If a buffer remains from a previous WebSocket frame read then continue reading it
 	if w.remainingBuffer != nil {
 
@@ -173,7 +168,6 @@ func (w *webSocketWrappedReader) Read(p []byte) (int, error) {
 
 	// Read a whole frame from the WebSocket connection
 	messageType, framePayload, err := w.wsConn.ReadMessage()
-	fmt.Println("readMessage result: ", messageType, framePayload, err);
 	if err != nil || messageType == -1 {
 		// The client has closed the connection. Indicate to the response writer that it should close
 		w.cancel()
@@ -187,7 +181,7 @@ func (w *webSocketWrappedReader) Read(p []byte) (int, error) {
 
 	// If the frame consists of only a single byte of value 1 then this indicates the client has finished sending
 	if len(framePayload) == 1 && framePayload[0] == 1 {
-		return 0, io.EOF
+		return 0, nil
 	}
 
 	// If the frame is somehow empty then just return the error
