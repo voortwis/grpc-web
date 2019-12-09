@@ -11,7 +11,7 @@ import (
 	"net/textproto"
 	"strings"
 	"time"
-	"fmt"
+// 	"fmt"
 
 	"github.com/desertbit/timer"
 	"github.com/gorilla/websocket"
