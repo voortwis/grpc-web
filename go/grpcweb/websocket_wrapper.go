@@ -58,7 +58,7 @@ func (w *webSocketResponseWriter) ping(dispose chan bool) {
 			return
 		case <-w.timer.C:
 			w.timer.Reset(w.timeOutInterval)
-			fmt.Println("Sending ping")
+// 			fmt.Println("Sending ping")
 			w.wsConn.WriteMessage(websocket.PingMessage, []byte{})
 		}
 	}
