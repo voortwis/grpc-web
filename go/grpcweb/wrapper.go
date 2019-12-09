@@ -93,6 +93,7 @@ func (w *WrappedGrpcServer) ServeHTTP(resp http.ResponseWriter, req *http.Reques
 	ctx, cancel := context.WithCancel(req.Context())
 	go func(closer <-chan bool) {
 		<-closer //the notifer blocks until the send
+		ctx.Done() // close this context
 		cancel() //explicitly cancel all go routines
 	}(notifier)
 	
