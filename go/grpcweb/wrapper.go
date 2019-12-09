@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"strings"
 	"time"
+	"fmt"
 
 	"github.com/gorilla/websocket"
 	"github.com/rs/cors"
@@ -88,6 +89,17 @@ func WrapServer(server *grpc.Server, options ...Option) *WrappedGrpcServer {
 //
 // You can control the CORS behaviour using `With*` options in the WrapServer function.
 func (w *WrappedGrpcServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+	
+	notify := resp.(http.CloseNotifier).CloseNotify()
+	ctx, cancel := context.WithCancel(req.Context())
+	go func() {
+		<-notify
+		fmt.Println("The client closed the connection prematurely.")
+		ctx.Done() // close this context
+		fmt.Println("ctx.Done() called.")
+		cancel()
+		fmt.Println("cancel() called.")
+	}()
 	
 // 	notifier := resp.(http.CloseNotifier).CloseNotify()
 // 	ctx, cancel := context.WithCancel(req.Context())
