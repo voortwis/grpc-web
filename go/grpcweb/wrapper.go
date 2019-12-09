@@ -88,6 +88,14 @@ func WrapServer(server *grpc.Server, options ...Option) *WrappedGrpcServer {
 //
 // You can control the CORS behaviour using `With*` options in the WrapServer function.
 func (w *WrappedGrpcServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+	
+	notifier := resp.(http.CloseNotifier).CloseNotify()
+	ctx, cancel := context.WithCancel(req.Context())
+	go func(closer <-chan bool) {
+		<-closer //the notifer blocks until the send
+		cancel() //explicitly cancel all go routines
+	}(notifier)
+	
 	if w.enableWebsockets && w.IsGrpcWebSocketRequest(req) {
 		if w.websocketOriginFunc(req) {
 			if !w.opts.corsForRegisteredEndpointsOnly || w.isRequestForRegisteredEndpoint(req) {
